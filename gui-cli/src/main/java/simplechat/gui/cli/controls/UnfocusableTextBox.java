@@ -1,4 +1,4 @@
-package simplechat.gui.cli.controls;
+package main.java.simplechat.gui.cli.controls;
 
 import com.googlecode.lanterna.gui2.TextBox;
 

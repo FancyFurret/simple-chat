@@ -1,6 +1,6 @@
-package simplechat.gui.cli;
+package main.java.simplechat.gui.cli;
 
-import simplechat.core.SimpleChat;
+import main.java.simplechat.core.SimpleChat;
 
 import java.io.IOException;
 

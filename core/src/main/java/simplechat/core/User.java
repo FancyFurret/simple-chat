@@ -1,4 +1,4 @@
-package simplechat.core;
+package main.java.simplechat.core;
 
 public class User {
     private String name;

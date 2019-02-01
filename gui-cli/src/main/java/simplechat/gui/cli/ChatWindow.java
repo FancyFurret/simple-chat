@@ -1,11 +1,11 @@
-package simplechat.gui.cli;
+package main.java.simplechat.gui.cli;
 
 import com.googlecode.lanterna.gui2.*;
-import simplechat.core.Message;
-import simplechat.core.User;
-import simplechat.core.UserList;
-import simplechat.core.interfaces.IChatListener;
-import simplechat.gui.cli.controls.UnfocusableTextBox;
+import main.java.simplechat.gui.cli.controls.UnfocusableTextBox;
+import main.java.simplechat.core.Message;
+import main.java.simplechat.core.User;
+import main.java.simplechat.core.UserList;
+import main.java.simplechat.core.interfaces.IChatListener;
 
 import java.util.Collections;
 

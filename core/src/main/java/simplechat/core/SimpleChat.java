@@ -1,7 +1,7 @@
-package simplechat.core;
+package main.java.simplechat.core;
 
-import simplechat.core.interfaces.IChatListener;
-import simplechat.core.interfaces.ISimpleChatEventListener;
+import main.java.simplechat.core.interfaces.IChatListener;
+import main.java.simplechat.core.interfaces.ISimpleChatEventListener;
 
 import java.util.ArrayList;
 

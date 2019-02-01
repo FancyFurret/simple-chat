@@ -1,4 +1,4 @@
-package simplechat.gui.cli;
+package main.java.simplechat.gui.cli;
 
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.Label;

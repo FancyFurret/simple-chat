@@ -1,7 +1,7 @@
-package simplechat.core.interfaces;
+package main.java.simplechat.core.interfaces;
 
-import simplechat.core.Message;
-import simplechat.core.User;
+import main.java.simplechat.core.Message;
+import main.java.simplechat.core.User;
 
 public interface IChatListener {
     void userJoined(User user);

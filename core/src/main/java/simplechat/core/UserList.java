@@ -1,4 +1,4 @@
-package simplechat.core;
+package main.java.simplechat.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
