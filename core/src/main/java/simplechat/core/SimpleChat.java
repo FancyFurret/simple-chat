@@ -35,14 +35,11 @@ public class SimpleChat implements ISimpleChatController {
         // TODO: Make this actually do stuff
         new Thread(() -> {
             try {
-                Thread.sleep(3000);
                 chatHandler = new ChatHandler();
                 chatHandler.connect(MULTICAST_IP, PORT);
                 started();
             } catch (ChatException e) {
                 connectionError(e.printMessage());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }).start();
     }
