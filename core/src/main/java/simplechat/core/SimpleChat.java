@@ -1,60 +1,64 @@
 package main.java.simplechat.core;
 
-import main.java.simplechat.core.interfaces.IChatListener;
+import main.java.simplechat.core.exceptions.ChatException;
+import main.java.simplechat.core.handlers.ChatHandler;
+import main.java.simplechat.core.interfaces.ISimpleChatController;
 import main.java.simplechat.core.interfaces.ISimpleChatEventListener;
+import main.java.simplechat.core.model.User;
+import main.java.simplechat.core.model.UserList;
 
 import java.util.ArrayList;
 
-public class SimpleChat {
-    private ArrayList<ISimpleChatEventListener> eventListeners;
-    private ArrayList<IChatListener> chatListeners;
+public class SimpleChat implements ISimpleChatController {
 
-    public SimpleChat() {
-        eventListeners = new ArrayList<>();
-        chatListeners = new ArrayList<>();
+    private final String MULTICAST_IP = "239.255.96.21";
+    private final int PORT = 19621;
+
+    private ChatHandler chatHandler;
+    private ArrayList<ISimpleChatEventListener> listeners;
+
+    private SimpleChat() {
+        listeners = new ArrayList<>();
     }
 
-    public void registerEventListener(ISimpleChatEventListener listener) {
-        eventListeners.add(listener);
+    public static ISimpleChatController newController() {
+        return new SimpleChat();
     }
 
-    public void registerChatListener(IChatListener listener) {
-        chatListeners.add(listener);
+    @Override
+    public void registerListener(ISimpleChatEventListener listener) {
+        listeners.add(listener);
     }
 
+    @Override
     public void start() {
         // TODO: Make this actually do stuff
         new Thread(() -> {
             try {
-                // Loading...
-                Thread.sleep(1500);
+                Thread.sleep(3000);
+                chatHandler = new ChatHandler();
+                chatHandler.connect(MULTICAST_IP, PORT);
                 started();
-
-                // Send message
-                Thread.sleep(1000);
-                newMessage(new Message("You got mail!"));
-
-                // Send another message
-                Thread.sleep(1000);
-                newMessage(new Message("You got more mail!"));
-
-                // Send a bunch more messages
-                Thread.sleep(1000);
-                for (int i = 0; i < 10; i++)
-                    newMessage(new Message("This is message " + i));
+            } catch (ChatException e) {
+                connectionError(e.printMessage());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
     }
 
+    @Override
+    public void stop() {
+        chatHandler.stop();
+    }
+
     private void started() {
         UserList users = new UserList();
         users.addUser(new User("Bob"));
-        eventListeners.forEach(listener -> listener.started(users));
+        listeners.forEach(listener -> listener.started(chatHandler, users));
     }
 
-    private void newMessage(Message message) {
-        chatListeners.forEach(listener -> listener.newMessage(message));
+    private void connectionError(String message) {
+        listeners.forEach(listener -> listener.connectionError(this, message));
     }
 }

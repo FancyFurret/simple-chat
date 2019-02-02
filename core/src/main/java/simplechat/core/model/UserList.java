@@ -1,4 +1,4 @@
-package main.java.simplechat.core;
+package main.java.simplechat.core.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,11 +6,11 @@ import java.util.Collection;
 public class UserList {
     private ArrayList<User> users;
 
-    UserList() {
+    public UserList() {
         users = new ArrayList<>();
     }
 
-    void addUser(User user) {
+    public void addUser(User user) {
         users.add(user);
     }
 

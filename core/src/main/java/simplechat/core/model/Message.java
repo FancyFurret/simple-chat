@@ -1,9 +1,9 @@
-package main.java.simplechat.core;
+package main.java.simplechat.core.model;
 
 public class Message {
     private String contents;
 
-    Message(String contents) {
+    public Message(String contents) {
         this.contents = contents;
     }
 

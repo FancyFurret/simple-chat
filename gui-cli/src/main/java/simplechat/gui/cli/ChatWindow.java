@@ -1,20 +1,26 @@
 package main.java.simplechat.gui.cli;
 
 import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
+import main.java.simplechat.core.interfaces.IChatConnection;
+import main.java.simplechat.gui.cli.controls.SubmittableTextBox;
 import main.java.simplechat.gui.cli.controls.UnfocusableTextBox;
-import main.java.simplechat.core.Message;
-import main.java.simplechat.core.User;
-import main.java.simplechat.core.UserList;
+import main.java.simplechat.core.model.Message;
+import main.java.simplechat.core.model.User;
+import main.java.simplechat.core.model.UserList;
 import main.java.simplechat.core.interfaces.IChatListener;
 
 import java.util.Collections;
 
 class ChatWindow extends BasicWindow implements IChatListener {
+    private MultiWindowTextGUI gui;
+    private IChatConnection connection;
     private UnfocusableTextBox chatTextBox;
-    private TextBox newMessageTextBox;
+    private SubmittableTextBox newMessageTextBox;
 
-    ChatWindow() {
+    ChatWindow(MultiWindowTextGUI gui) {
         super("Simple Chat");
+        this.gui = gui;
         setHints(Collections.singletonList(Hint.FULL_SCREEN));
 
         Panel panel = new Panel(new BorderLayout());
@@ -26,13 +32,14 @@ class ChatWindow extends BasicWindow implements IChatListener {
 
         centerPanel.addComponent(chatTextBox);
         centerPanel.setLayoutData(BorderLayout.Location.CENTER);
-        panel.addComponent(centerPanel.withBorder(Borders.singleLineBevel()));
+        panel.addComponent(centerPanel);
 
-        newMessageTextBox = new TextBox();
+        newMessageTextBox = new SubmittableTextBox();
         newMessageTextBox.setLayoutData(BorderLayout.Location.BOTTOM);
         newMessageTextBox.takeFocus();
+        newMessageTextBox.addListener(this::sendMessage);
 
-        panel.addComponent(newMessageTextBox);
+        panel.addComponent(newMessageTextBox.withBorder(Borders.singleLineBevel("Message:")));
         setComponent(panel);
     }
 
@@ -47,12 +54,25 @@ class ChatWindow extends BasicWindow implements IChatListener {
     }
 
     @Override
-    public void newMessage(Message message) {
+    public void recvMessage(Message message) {
         chatTextBox.addLine(message.getContents());
     }
 
-    public void welcome(UserList users) {
-        chatTextBox.addLine("Welcome to Simple Chat! There are " + users.getAmount() + " users connected:");
+    @Override
+    public void error(String message) {
+        MessageDialog.showMessageDialog(gui, "Error!", message);
+    }
+
+    private void sendMessage() {
+        connection.sendMessage(newMessageTextBox.getText());
+        newMessageTextBox.setText("");
+    }
+
+    void connected(IChatConnection connection, UserList users) {
+        this.connection = connection;
+        connection.registerListener(this);
+
+        chatTextBox.setText("Welcome to Simple Chat! There are " + users.getAmount() + " users connected:");
         for (User user : users.getUsers())
             chatTextBox.addLine("* " + user.getName());
 

@@ -4,9 +4,14 @@ import com.googlecode.lanterna.bundle.LanternaThemes;
 import com.googlecode.lanterna.graphics.PropertyTheme;
 import com.googlecode.lanterna.gui2.AbstractTextGUI;
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
+import com.googlecode.lanterna.gui2.Window;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import main.java.simplechat.core.UserList;
+import main.java.simplechat.core.interfaces.ISimpleChatController;
+import main.java.simplechat.core.model.UserList;
+import main.java.simplechat.core.interfaces.IChatConnection;
 import main.java.simplechat.core.interfaces.ISimpleChatEventListener;
 
 import java.io.FileInputStream;
@@ -30,13 +35,10 @@ class Gui implements ISimpleChatEventListener {
 
         gui = new MultiWindowTextGUI(screen);
         gui.setTheme(LanternaThemes.getRegisteredTheme("simplechat"));
+        gui.setEOFWhenNoWindows(true);
         gui.addWindow(new LoadingWindow());
 
-        chatWindow = new ChatWindow();
-    }
-
-    ChatWindow getChatWindow() {
-        return chatWindow;
+        chatWindow = new ChatWindow(gui);
     }
 
     void waitUntilClosed() {
@@ -44,9 +46,18 @@ class Gui implements ISimpleChatEventListener {
     }
 
     @Override
-    public void started(UserList users) {
+    public void started(IChatConnection connection, UserList users) {
         gui.addWindow(chatWindow);
-        chatWindow.welcome(users);
+        chatWindow.connected(connection, users);
+    }
+
+    @Override
+    public void connectionError(ISimpleChatController chatController, String message) {
+        MessageDialogButton result = MessageDialog.showMessageDialog(gui, "Error!", message, MessageDialogButton.Retry, MessageDialogButton.Close);
+        if (result == MessageDialogButton.Close)
+            gui.getActiveWindow().close();
+        else if (result == MessageDialogButton.Retry)
+            chatController.start();
     }
 
     private static Properties loadPropTheme(String resourceFileName) {

@@ -1,9 +1,9 @@
-package main.java.simplechat.core;
+package main.java.simplechat.core.model;
 
 public class User {
     private String name;
 
-    User(String name) {
+    public User(String name) {
         this.name = name;
     }
 

@@ -1,7 +1,8 @@
 package main.java.simplechat.core.interfaces;
 
-import main.java.simplechat.core.UserList;
+import main.java.simplechat.core.model.UserList;
 
 public interface ISimpleChatEventListener {
-    void started(UserList users);
+    void started(IChatConnection chat, UserList users);
+    void connectionError(ISimpleChatController chatController, String message);
 }

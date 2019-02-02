@@ -1,6 +1,7 @@
 package main.java.simplechat.gui.cli;
 
 import main.java.simplechat.core.SimpleChat;
+import main.java.simplechat.core.interfaces.ISimpleChatController;
 
 import java.io.IOException;
 
@@ -16,11 +17,13 @@ public class Main
             e.printStackTrace();
         }
 
-        SimpleChat chat = new SimpleChat();
-        chat.registerEventListener(gui);
-        chat.registerChatListener(gui.getChatWindow());
+        ISimpleChatController chat = SimpleChat.newController();
+        chat.registerListener(gui);
         chat.start();
 
         gui.waitUntilClosed();
+
+        System.out.println("Cleaning up...");
+        chat.stop();
     }
 }
