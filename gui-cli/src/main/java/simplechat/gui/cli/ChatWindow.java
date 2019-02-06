@@ -7,7 +7,6 @@ import main.java.simplechat.gui.cli.controls.SubmittableTextBox;
 import main.java.simplechat.gui.cli.controls.UnfocusableTextBox;
 import main.java.simplechat.core.model.Message;
 import main.java.simplechat.core.model.User;
-import main.java.simplechat.core.model.UserList;
 import main.java.simplechat.core.interfaces.IChatListener;
 
 import java.util.Collections;
@@ -45,17 +44,17 @@ class ChatWindow extends BasicWindow implements IChatListener {
 
     @Override
     public void userJoined(User user) {
-
+        addLogMessage(user.getName() + " has joined!");
     }
 
     @Override
     public void userLeft(User user) {
-
+        addLogMessage(user.getName() + " has !");
     }
 
     @Override
     public void recvMessage(Message message) {
-        chatTextBox.addLine(message.getContents());
+        chatTextBox.addLine(message.getSender().getName() + ": " + message.getContents());
     }
 
     @Override
@@ -68,14 +67,18 @@ class ChatWindow extends BasicWindow implements IChatListener {
         newMessageTextBox.setText("");
     }
 
-    void connected(IChatConnection connection, UserList users) {
+    void connected(IChatConnection connection) {
         this.connection = connection;
         connection.registerListener(this);
 
-        chatTextBox.setText("Welcome to Simple Chat! There are " + users.getAmount() + " users connected:");
-        for (User user : users.getUsers())
-            chatTextBox.addLine("* " + user.getName());
+        chatTextBox.setText("Welcome to Simple Chat! There are " + connection.getUsers().size() + " users connected:");
+        for (User user : connection.getUsers())
+            addLogMessage(user.getName());
 
         chatTextBox.addLine("");
+    }
+
+    private void addLogMessage(String message) {
+        chatTextBox.addLine("* " + message);
     }
 }

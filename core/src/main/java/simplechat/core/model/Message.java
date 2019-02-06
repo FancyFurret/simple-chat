@@ -1,10 +1,18 @@
 package main.java.simplechat.core.model;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
+    private User sender;
     private String contents;
 
-    public Message(String contents) {
+    public Message(User sender, String contents) {
+        this.sender = sender;
         this.contents = contents;
+    }
+
+    public User getSender() {
+        return sender;
     }
 
     public String getContents() {

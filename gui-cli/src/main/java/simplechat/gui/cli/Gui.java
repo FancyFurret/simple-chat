@@ -4,13 +4,11 @@ import com.googlecode.lanterna.bundle.LanternaThemes;
 import com.googlecode.lanterna.graphics.PropertyTheme;
 import com.googlecode.lanterna.gui2.AbstractTextGUI;
 import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
-import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialogButton;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import main.java.simplechat.core.interfaces.ISimpleChatController;
-import main.java.simplechat.core.model.UserList;
 import main.java.simplechat.core.interfaces.IChatConnection;
 import main.java.simplechat.core.interfaces.ISimpleChatEventListener;
 
@@ -46,9 +44,9 @@ class Gui implements ISimpleChatEventListener {
     }
 
     @Override
-    public void started(IChatConnection connection, UserList users) {
+    public void started(IChatConnection connection) {
         gui.addWindow(chatWindow);
-        chatWindow.connected(connection, users);
+        chatWindow.connected(connection);
     }
 
     @Override

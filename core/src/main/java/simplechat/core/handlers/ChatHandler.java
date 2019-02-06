@@ -5,41 +5,34 @@ import main.java.simplechat.core.interfaces.IChatConnection;
 import main.java.simplechat.core.interfaces.IChatListener;
 import main.java.simplechat.core.interfaces.INetworkListener;
 import main.java.simplechat.core.model.Message;
-import main.java.simplechat.core.network.FunctionPair;
-import main.java.simplechat.core.network.MulticastNetwork;
+import main.java.simplechat.core.model.User;
+import main.java.simplechat.core.model.UserList;
+import main.java.simplechat.core.network.Network;
+import org.jgroups.Address;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 
 public class ChatHandler implements IChatConnection, INetworkListener {
 
-    private MulticastNetwork network;
+    private User me;
+    private UserList users;
+    private Network network;
     private ArrayList<IChatListener> listeners;
 
     public ChatHandler() {
-        network = new MulticastNetwork(new HashMap<String, FunctionPair>() {{
-            put("get_ip", new FunctionPair(
-                    (args) -> {
-                        try {
-                            args.addProperty("ip", InetAddress.getLocalHost().getHostAddress());
-                        } catch (UnknownHostException e) {
-                            error("Could not get ip.", e);
-                        }
-                    },
-                    (args) -> System.out.println("Found friend at: " + args.get("ip").getAsString())));
-        }});
-
+        users = new UserList();
+        network = new Network();
         listeners = new ArrayList<>();
     }
 
-    public void connect(String multicastIp, int port) throws ChatException {
+    public void connect(String group) throws ChatException {
         network.registerListener(this);
-        network.start(multicastIp, port);
-        network.sendActionMessage("get_ip");
+        network.start(group, this);
 
-        // TODO loop here, waiting for messages?
+        me = new User(network.getMe().toString());
+        for (Address addr : network.getMembers())
+            users.addUser(new User(addr.toString()));
     }
 
     public void stop() {
@@ -53,6 +46,24 @@ public class ChatHandler implements IChatConnection, INetworkListener {
 
     @Override
     public void sendMessage(String message) {
+        for (Address addr : network.getMembers()) {
+            network.call(addr, "recvMessage", new Message(me, message), Message.class);
+        }
+    }
+
+    @Override
+    public Collection<User> getUsers() {
+        return users.getUsers();
+    }
+
+    @Override
+    public void userJoined(Address address) {
+        listeners.forEach(listener -> listener.userJoined(new User(address.toString())));
+    }
+
+    @Override
+    public void userLeft(Address address) {
+        listeners.forEach(listener -> listener.userLeft(new User(address.toString())));
     }
 
     @Override

@@ -11,8 +11,7 @@ import java.util.ArrayList;
 
 public class SimpleChat implements ISimpleChatController {
 
-    private final String MULTICAST_IP = "239.255.96.21";
-    private final int PORT = 19621;
+    private final String GROUP = "com.eightbitforest.simplechat.jgroup";
 
     private ChatHandler chatHandler;
     private ArrayList<ISimpleChatEventListener> listeners;
@@ -32,11 +31,10 @@ public class SimpleChat implements ISimpleChatController {
 
     @Override
     public void start() {
-        // TODO: Make this actually do stuff
         new Thread(() -> {
             try {
                 chatHandler = new ChatHandler();
-                chatHandler.connect(MULTICAST_IP, PORT);
+                chatHandler.connect(GROUP);
                 started();
             } catch (ChatException e) {
                 connectionError(e.printMessage());
@@ -50,9 +48,7 @@ public class SimpleChat implements ISimpleChatController {
     }
 
     private void started() {
-        UserList users = new UserList();
-        users.addUser(new User("Bob"));
-        listeners.forEach(listener -> listener.started(chatHandler, users));
+        listeners.forEach(listener -> listener.started(chatHandler));
     }
 
     private void connectionError(String message) {
